@@ -10,11 +10,25 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@material-tailwind/react": "^2.1.8",
+    "@emotion/react": "^11.11.3",
+    "@emotion/styled": "^11.11.0",
+    "@material-tailwind/react": "^2.1.9",
+    "@mui/material": "^5.15.10",
+    "@stripe/stripe-js": "^3.0.6",
+    "aos": "^3.0.0-beta.6",
     "axios": "^1.6.7",
+    "cities.json": "^1.1.33",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.21.3"
+    "react-feather": "^2.0.10",
+    "react-router-dom": "^6.21.3",
+    "react-select": "^5.8.0",
+    "react-toastify": "^10.0.4",
+    "sweetalert2": "^11.10.5",
+    "swiper": "^11.0.6",
+    "tailwindcss-animated": "^1.0.1",
+    "taos": "^1.0.5",
+    "tw-elements": "^1.1.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",

@@ -1,116 +1,225 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useCart } from "../context/ContextData";
-import cartLogo from "../assets/cartlog.jpg";
+import axios from "axios";
 import { Link } from "react-router-dom";
 
 const AddToCart = () => {
-  const { selectedItems } = useCart();
-  const subTotal = selectedItems.reduce((acc, item) => acc + item.price, 0);
+  const { cartData } = useCart();
+  const [error, setError] = useState("");
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const res = await axios.delete(
+  //         `http://localhost:8020/api/items/delete`,
+  //         {
+  //           withCredentials: true,
+  //         }
+  //       );
+  //       console.log("delete data", res);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   fetchData();
+  // }, []);
+  const cartDatas = cartData.filter(
+    (cart) => cart.deliveryStatus !== "Success"
+  );
+  useEffect(() => {}, [cartDatas]);
+  const incrementQuantity = async (itemId) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:8020/api/cart/incre/${itemId}`
+      );
+      console.log(response);
+    } catch (error) {
+      console.log("Error incrementing quantity", error);
+    }
+  };
+
+  const decrementQuantity = async (itemId) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:8020/api/cart/decre/${itemId}`
+      );
+      console.log(response);
+      if (response.data.cart.quantity === 0) {
+        await axios.delete(
+          `http://localhost:8020/api/cart/deleteCart/${itemId}`
+        );
+      }
+    } catch (error) {
+      console.log("Error incrementing quantity", error);
+    }
+  };
+
+  const getTotalPrice = () => {
+    return cartDatas.reduce((total, item) => total + item.price, 0);
+  };
+
+  const getTotalCount = () => {
+    return cartDatas.reduce((total, item) => total + item.quantity, 0);
+  };
+
+  const getDeliveryTax = () => {
+    const count = getTotalCount();
+    if (count === 1) {
+      return 200;
+    } else if (count <= 5) {
+      return 500;
+    } else if (count <= 10) {
+      return 750;
+    } else {
+      return 0;
+    }
+  };
+
+  const getSubtotal = () => {
+    return getTotalPrice() + getDeliveryTax();
+  };
 
   return (
     <>
       <div
-        className="flex justify-between items-center pb-20 pt-36 px-20"
-        style={{ background: "#deebfb" }}
+        className="py-40 px-32 flex justify-center gap-20 flex-row-reverse"
+        style={{ background: "#5c524c" }}
       >
-        <div className="logo" style={{ width: "50%" }}>
-          <img
-            src={cartLogo}
-            alt=""
-            style={{ width: "550px", height: "500px", objectFit: "fill" }}
-          />
-        </div>
-        <div className="content" style={{ width: "50%" }}>
-          <div style={{ width: "550px" }} className="flex flex-col gap-4">
-            <h1 className="font-bold text-4xl">Friday Deals</h1>
-            <p className="font-medium text-xl">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo
-              veritatis quisquam saepe ratione tempora nemo.
-            </p>
-            <Link
-              className="py-1.5 rounded-md shadow-lg mt-6 max-w-max px-6 font-bold text-white transition-all hover:px-10"
-              style={{ background: "#3498db" }}
-              to="/"
-            >
-              Go to
+        {cartDatas.length === 0 && (
+          <div className="flex flex-col gap-4">
+            <h1 className="font-bold text-2xl">Your Cart is empty</h1>
+            <Link to="/">
+              <button className="w-full bg-blue-500 text-white py-1.5">
+                Continue Shopping
+              </button>
             </Link>
           </div>
-        </div>
-      </div>
-      <div
-        className="main flex justify-center py-20"
-        style={{ background: "#ecf0f1", width: "100%" }}
-      >
-        <div className="cart p-10 flex flex-col gap-6" style={{ width: "80%" }}>
-          <h1 className="text-start font-bold text-4xl py-6">Shopping Cart</h1>
-          {selectedItems &&
-            selectedItems.map((item, index) => (
+        )}
+        {cartDatas.length >= "1" ? (
+          <div
+            className="flex flex-col gap-6 bg-gray-400 p-6 py-8 h-fit shadow-xl"
+            style={{
+              width: "30%",
+              background: "#3b3b3b",
+            }}
+          >
+            <h1 className="font-bold text-center text-xl">Order Summary</h1>
+            <div className="details flex flex-col gap-6">
               <div
-                key={index}
-                className="cart-item flex justify-between items-start gap-4 shadow-xl p-6 rounded-md"
-                style={{ backgroundColor: "#95a5a6" }}
+                className="flex justify-between pb-4 px-2"
+                style={{ borderBottom: ".6px solid #202020" }}
               >
-                <div className="item-image">
-                  <img
-                    src={item.imageUrl}
-                    alt=""
-                    className="shadow-2xl rounded-md"
-                    style={{
-                      width: "250px",
-                      height: "275px",
-                      objectFit: "cover",
-                    }}
-                  />
-                </div>
-                <div className="cart-data flex flex-col gap-4 pt-2">
-                  <h1 className="font-bold text-xl">{item.name}</h1>
-                  <p className="font-medium text-lg">{item.description}</p>
-                  <p className="flex gap-2">
-                    <p className="font-bold">RS :</p>
-                    {item.price}
-                  </p>
-                </div>
-                <button className="text-2xl font-bold text-green-700 top-2 right-6 hover:text-red-500">
-                  X
-                </button>
+                <p>Items</p>
+                <p>{getTotalCount()}</p>
               </div>
-            ))}
-          {selectedItems.length === 0 && (
-            <div>
-              <h1 className="text-start font-bold text-xl text-red-500">
-                Empty Cart
-              </h1>
-            </div>
-          )}
-          {selectedItems.length > 0 && (
-            <div
-              className="subtotal shadow-2xl rounded-md  w-96 p-6 text-white"
-              style={{ background: "#95a5a6" }}
-            >
-              <h1 className="font-bold text-2xl ">Order Summary</h1>
-              <div className="sunDetail mt-6 flex flex-col gap-4">
-                <p className="font-medium flex justify-between">
-                  Total Items :{" "}
-                  <p className="font-light bg-gray-500 px-2 rounded-md">
-                    {selectedItems.length}
-                  </p>
+              <div
+                className="flex justify-between pb-4 px-2"
+                style={{ borderBottom: ".6px solid #202020" }}
+              >
+                <p>Total</p>
+                <p>
+                  <span className="font-medium">PKR :</span> {getTotalPrice()}
                 </p>
-                <p className="font-medium flex justify-between">
-                  Subtotal :{" "}
-                  <p className="font-light bg-gray-500 px-2 rounded-md">
-                    {subTotal}
-                  </p>{" "}
+              </div>
+              <div
+                className="flex justify-between pb-4 px-2"
+                style={{ borderBottom: ".6px solid #202020" }}
+              >
+                <p>Delivery Tax</p>
+                <p>{getDeliveryTax()}</p>
+              </div>
+              <div
+                className="flex justify-between pb-4 px-2"
+                style={{ borderBottom: ".6px solid #202020" }}
+              >
+                <p>Subtotal</p>
+                <p>
+                  <span className="font-medium">PKR :</span> {getSubtotal()}
                 </p>
-                <button
-                  className="py-1.5 rounded-md shadow-lg mt-6"
-                  style={{ background: "#3498db" }}
-                >
-                  Checkout
-                </button>
+              </div>
+              <div className="checkout-btn my-2">
+                <Link to="/checkout">
+                  <button className="w-full py-1.5 bg-blue-500 text-white rounded-md">
+                    Checkout
+                  </button>
+                </Link>
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        ) : (
+          ""
+        )}
+
+        {cartDatas.length > 0 ? (
+          <div style={{ width: "70%" }}>
+            <div className="flex flex-col gap-10">
+              {cartDatas &&
+                cartDatas.map((data, index) => (
+                  <div
+                    key={index}
+                    className="flex justify-between items-start p-6"
+                    style={{ background: "#3b3b3b" }}
+                  >
+                    <div
+                      className="img"
+                      style={{ width: "200px", height: "100%" }}
+                    >
+                      <img
+                        src={`http://localhost:8020/uploads/${data?.cartImage[0]}`}
+                        style={{
+                          objectFit: "cover",
+                          width: "100%",
+                          aspectRatio: "2/3",
+                          height: "auto",
+                        }}
+                        alt=""
+                      />
+                    </div>
+                    <div className="name-price">
+                      <h4 className="text-md font-bold mb-4 pl-1.5 text-white">
+                        {data.name}
+                      </h4>
+                      <p className="text-md font-medium mb-4 pl-1.5">
+                        PKR: {data.actualPrice}
+                      </p>
+                      <p className="text-md font-medium mb-4 pl-1.5">
+                        Color : {data.color}
+                      </p>
+                      <p className="text-md font-medium mb-4 pl-1.5">
+                        Size : {data.size}
+                      </p>
+                    </div>
+                    {/* add or minus */}
+                    <div className="flex items-center justify-center">
+                      <button
+                        onClick={() => decrementQuantity(data._id)}
+                        className="px-4 py-2 bg-gray-200 text-gray-700 rounded-none hover:bg-gray-300"
+                      >
+                        -
+                      </button>
+                      <span className="px-4 py-2 bg-gray-200 text-gray-700">
+                        {data.quantity}
+                      </span>
+                      <button
+                        onClick={() => incrementQuantity(data._id)}
+                        className="px-4 py-2 bg-gray-200 text-gray-700 rounded-none hover:bg-gray-300"
+                      >
+                        +
+                      </button>
+                      <p className="text-red-500">{error && error}</p>
+                    </div>
+                    {/*  */}
+                    <div className="total">
+                      <p>
+                        <span>PKR :</span> {data.price}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+        ) : (
+          ""
+        )}
       </div>
     </>
   );

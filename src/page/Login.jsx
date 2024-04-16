@@ -3,9 +3,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/ContextData";
 
 const Login = () => {
-  const { userLogin } = useCart();
+  const { login } = useCart();
   const navigate = useNavigate();
-  const [error, setError] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
+
   const [input, setInput] = useState({
     email: "",
     password: "",
@@ -18,15 +19,21 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await userLogin(input);
-      setInput({
-        email: "",
-        password: "",
-      });
-      navigate("/");
+      const errorMessage = await login(input);
+      if (errorMessage === "Please provide all fields") {
+        setErrorMessage(errorMessage);
+      } else if (errorMessage === "User not found") {
+        setErrorMessage(errorMessage);
+      } else if (errorMessage === "Password is incorrect") {
+        setErrorMessage(errorMessage);
+      } else {
+        // setTimeout(() => {
+          navigate("/");
+        // }, 2000);
+      }
     } catch (error) {
-      setError("Login failed", error);
-      console.log("Login error", error);
+      console.log("Error:", error.message);
+      setErrorMessage("An error occurred");
     }
   };
 
@@ -79,9 +86,9 @@ const Login = () => {
                 >
                   Sign in
                 </button>
-                {error && (
+                {errorMessage && (
                   <p className="text-red-400 font-medium text-center">
-                    {error}
+                    {errorMessage}
                   </p>
                 )}
                 <p className="text-sm font-light text-gray-500 dark:text-gray-400">

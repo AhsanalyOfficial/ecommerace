@@ -1,15 +1,121 @@
-.productImage:hover .productDisplayOverlay {
-  height: 350px;
-  bottom: 0;
-}
 .productDisplayOverlay {
-  background: gray;
-  bottom: 0px;
-  width: 350px;
   height: 0px;
+  bottom: 0px;
+  background: gray;
+  width: 100%;
   position: absolute;
   overflow: hidden;
-  transition: all 0.5s ease;
+  transition: all 0.8s ease;
   opacity: 0.3;
   cursor: pointer;
 }
+/*  */
+.navbar {
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 50;
+  transition: all 0.5s ease-in-out;
+  position: fixed;
+}
+
+.navbar.sticky {
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #212121;
+}
+/*  */
+.productImage:hover .productDisplayOverlay {
+  bottom: 0px;
+  height: 100%;
+}
+.swiper {
+  width: 100%;
+  height: 100vh;
+}
+
+.swiper-slide {
+  text-align: center;
+  font-size: 18px;
+  background: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.swiper-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: fit;
+}
+
+h1 {
+  font-size: 46px;
+  font-weight: bold;
+  line-height: 60px;
+  color: #ecf0f1;
+}
+.text-shadow {
+  text-shadow: 4px 4px 4px rgba(0, 0, 0, 0.6);
+}
+h2 {
+  font-size: 24px;
+  font-weight: medium;
+}
+h3 {
+  font-size: 18px;
+  font-weight: medium;
+}
+p {
+  color: #ecf0f1;
+  font-size: 16px;
+}
+
+button {
+  border: none;
+  outline: 0;
+  display: inline-block;
+  padding: 8px 24px;
+  color: #fff;
+  background-color: #212121;
+  text-align: center;
+  cursor: pointer;
+  font-size: 16px;
+  border-radius: 4px;
+}
+.main-about {
+  padding: 0 0 200px 0px;
+}
+.about {
+  background-image: url("../assets/about.webp");
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: center;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.about-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 40%;
+  margin: 100px 0;
+  text-align: center;
+  padding: 50px 40px;
+  background: rgb(71 66 66 / 64%);
+}
+
+// overlay
+.overlay-home {
+  background: red !important;
+}
+
+/* ///////////////////////////////////////////// */
+/* ///// Home Responsive Code ////// */
+
+/* ///////////////////////////////////////////// */

@@ -15,12 +15,26 @@ import Additem from "./page/AddItem.jsx";
 import { CartContextProvider } from "./context/ContextData.jsx";
 import AddToCart from "./page/AddToCart.jsx";
 import DisplayItem from "./page/DisplayItem.jsx";
+import Home from "./page/Home.jsx";
+import { AddItemByCat } from "./page/AddItemByCat.jsx";
+import SizeandColor from "./page/SizeandColor.jsx";
+import AddData from "./page/AddData.jsx";
+import Checkout from "./page/Checkout.jsx";
+import CartLayout from "./page/CartLayout.jsx";
+import Shipping from "./page/Shipping.jsx";
+import Information from "./page/Information.jsx";
+import { Success } from "./page/Success.jsx";
+import { Cancel } from "./page/Cancel.jsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Layout />,
     children: [
+      {
+        path: "/home",
+        element: <Home />,
+      },
       {
         path: "/",
         element: <Product />,
@@ -47,15 +61,49 @@ const router = createBrowserRouter([
       },
       {
         path: "/add",
-        element: <Additem />,
+        element: <AddData />,
       },
       {
-        path: "/addToCart",
+        path: "/cart",
         element: <AddToCart />,
       },
       {
         path: "/displayData",
         element: <DisplayItem />,
+      },
+      {
+        path: "/addItemByCat",
+        element: <AddItemByCat />,
+      },
+      {
+        path: "/size&color",
+        element: <SizeandColor />,
+      },
+      {
+        path: "/addItem",
+        element: <Additem />,
+      },
+      {
+        path: "success",
+        element: <Success />,
+      },
+      {
+        path: "cancel",
+        element: <Cancel />,
+      },
+    ],
+  },
+  {
+    path: "/checkout",
+    element: <CartLayout />,
+    children: [
+      {
+        path: "",
+        element: <Information />,
+      },
+      {
+        path: "shipping",
+        element: <Shipping />,
       },
     ],
   },

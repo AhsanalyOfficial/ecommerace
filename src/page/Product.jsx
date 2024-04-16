@@ -1,85 +1,101 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { useCart } from "../context/ContextData";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import "../style/animate.css";
+import { useCart } from "../context/ContextData";
 
 const Product = () => {
-  const { handleCart } = useCart();
-  const [items, setItems] = useState([]);
-  const [displayItemData, setDisplayItemData] = useState(null);
+  const { handleDisplay } = useCart();
+  const [datas, setDatas] = useState([]);
+  const [error, setError] = useState("");
   const cat = useLocation().search;
-
   useEffect(() => {
     const fetchData = async () => {
-      const res = await axios.get(`http://localhost:8020/api/items${cat}`);
-      setItems(res.data);
+      try {
+        const res = await axios.get(
+          `http://localhost:8020/api/items/getItems/cat${cat}`
+        );
+        setDatas(res.data.items);
+        console.log(res.data.items);
+      } catch (error) {
+        setError("Data not found");
+        console.log("Error fetching data:", error);
+      }
     };
+
     fetchData();
   }, [cat]);
 
-  const handleData = async (itemId) => {
-    try {
-      const res = await axios.get(`http://localhost:8020/api/items/${itemId}`);
-      setDisplayItemData(res.data);
-      localStorage.setItem("displayItemData", JSON.stringify(res.data));
-      await handleCart(itemId);
-      console.log(res.data);
-    } catch (error) {
-      console.log("error in display item", error.message);
-    }
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.post(
+          "http://localhost:8020/api/items/mergeData"
+        );
+        console.log(res.data.mergedResults);
+        return res.data.mergedResults;
+      } catch (error) {
+        console.log("Error fetching merge data:", error);
+      }
+    };
+    fetchData();
+  }, []);
+
   return (
     <>
       <div
-        className="main flex justify-center pt-36 pb-20"
-        style={{ width: "100%" }}
+        className="flex items-center justify-center gap-10 flex-wrap py-32 px-24"
+        style={{ background: "#5c524c" }}
       >
-        <div
-          className="flex justify-evenly flex-wrap gap-5 gap-y-20 items-center"
-          style={{ width: "80%" }}
-        >
-          {items &&
-            items.map((item, index) => (
-              <div
-                key={index}
-                className="flex justify-between items-center shadow-2xl p-4 rounded-md"
-              >
-                <div className="flex flex-col gap-2">
-                  <div className="productImage relative">
-                    <img
-                      src={item.imageUrl[0]}
-                      alt=""
-                      style={{
-                        width: "350px",
-                        height: "350px",
-                        objectFit: "cover",
-                      }}
-                    />
-                    <Link
-                      to={{
-                        pathname: "/displayData",
-                        state: { displayItemData },
-                      }}
-                      className="productDisplayOverlay"
-                      onClick={() => handleData(item._id)}
-                    ></Link>
-                  </div>
-                  <h1 className="font-bold mt-4">{item.name}</h1>
-                  <p>{item.description}</p>
-                  <p className="flex gap-2 font-medium">
-                    RS:<p className="font-light">{item.price}</p>
+        {datas.map((data, index) => (
+          <div
+            key={index}
+            className="mb-10"
+            style={{
+              width: "400px",
+              height: "auto",
+            }}
+          >
+            <div>
+              <div className="productImage relative">
+                <img
+                  src={`http://localhost:8020/uploads/${data.imageUrl[2]}`}
+                  style={{
+                    objectFit: "cover",
+                    height: "auto",
+                    aspectRatio: "2/3",
+                    width: "100%",
+                    cursor: "pointer",
+                  }}
+                  alt="product"
+                />
+                <Link onClick={() => handleDisplay(data._id)} to="/displayData">
+                  <div className="productDisplayOverlay absolute"></div>
+                </Link>
+              </div>
+              <div className="details flex flex-col-reverse justify-between mt-6">
+                <div className="name-des">
+                  <h4 className="text-lg font-bold mb-4 pl-1.5">{data.name}</h4>
+                  <p className="text-md font-medium mb-4 pl-1.5">
+                    PKR: {data.price}
                   </p>
-                  <button
-                    className="font-medium text-white px-3 py-1 rounded-sm bg-green-600"
-                    onClick={() => handleData(item._id)}
-                  >
-                    Add Item
-                  </button>
+                  <p className="text-md font-medium mb-4 pl-1.5">
+                    Quantity: {data.quantity}
+                  </p>
                 </div>
               </div>
-            ))}
-        </div>
+            </div>
+          </div>
+        ))}
+        {datas ? (
+          // ///////////////////////////////////////
+          ""
+        ) : (
+          // ///////////////////////////////////////
+          <p className="text-center text-2xl font-medium text-red-600">
+            {error}
+          </p>
+        )}
       </div>
     </>
   );
